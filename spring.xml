@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jdbc
+       http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+">
+
+<!--    <bean id="dao" class="com.bed1.dao.CreditCard"/>-->
+
+    <bean id="ccDao" class="com.bed1.dao.CreditCardDAO">
+        <property name="ht" ref="Hibtemplate"/>
+    </bean>
+
+    <bean id="Hibtemplate"
+        class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="sessionFactory" ref="ssFactory" />
+        <property name="checkWriteOperations" value="false" />
+    </bean>
+
+    <bean id="ssFactory"
+    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="ds" />
+        <property name="mappingResources" value="CreditCard.hbm.xml"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="hibernate.h2.console.enabled">true</prop>
+                <prop key="hibernate.h2.console.path">/h2</prop>
+            </props>
+        </property>
+
+    </bean>
+
+    <bean id="ds" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="org.h2.Driver"/>
+        <property name="url" value="jdbc:h2:mem:test"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <jdbc:initialize-database data-source="ds" ignore-failures="DROPS">
+        <jdbc:script location="import.sql"/>
+    </jdbc:initialize-database>
+
+</beans>
